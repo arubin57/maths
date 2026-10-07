@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Разряды числа</title>
+<style>
+  :root{
+    --bg:#f7fbff;
+    --ink:#1f2937;
+    --line:#2f3b4a;
+    --car:#f4c95d;
+    --car2:#f0b83f;
+    --window:#eaf7ff;
+    --muted:#6b7280;
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0;
+    min-height:100vh;
+    font-family:Arial, Helvetica, sans-serif;
+    color:var(--ink);
+    background:
+      radial-gradient(circle at 20% 10%, rgba(30,136,229,.08), transparent 28%),
+      linear-gradient(#ffffff, var(--bg));
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:24px;
+  }
+  .app{width:min(980px,96vw);text-align:center}
+  h1{font-size:clamp(28px,4vw,46px);margin:0 0 22px;font-weight:800}
+  .hint{margin:-10px 0 26px;color:var(--muted);font-size:clamp(15px,2vw,19px)}
+  .scene{position:relative;margin:0 auto 26px;padding:20px 14px 28px}
+  .car{
+    margin:0 auto;width:min(760px,92vw);
+    background:linear-gradient(180deg,var(--car),var(--car2));
+    border:5px solid var(--line);border-radius:26px 26px 18px 18px;
+    box-shadow:0 12px 28px rgba(31,41,55,.15);
+    padding:28px 26px 18px;position:relative
+  }
+  .roof{
+    position:absolute;left:7%;right:7%;top:-23px;height:28px;
+    background:#d95b43;border:5px solid var(--line);border-bottom:none;
+    border-radius:28px 28px 0 0
+  }
+  .windows{display:grid;grid-template-columns:repeat(3,1fr);gap:22px}
+  .slot{display:flex;flex-direction:column;align-items:center}
+  .window{
+    width:100%;aspect-ratio:1.08/1;min-height:145px;
+    background:linear-gradient(180deg,#effbff,#d7f0ff);
+    border:5px solid var(--line);border-radius:18px;
+    display:flex;align-items:center;justify-content:center;
+    overflow:hidden;position:relative
+  }
+  .window::after{
+    content:"";position:absolute;inset:8px;border-radius:10px;
+    border:2px solid rgba(255,255,255,.7);pointer-events:none
+  }
+  .digit{
+    font-size:clamp(62px,10vw,112px);font-weight:900;line-height:1;
+    transition:transform .22s ease, opacity .22s ease
+  }
+  .digit.empty{opacity:.12}
+  .toplabel,.bottomlabel{font-size:clamp(22px,3vw,32px);font-weight:900;line-height:1}
+  .toplabel{margin-bottom:10px}
+  .bottomlabel{margin-top:12px}
+  .wheels{display:flex;justify-content:space-around;width:70%;margin:12px auto -42px}
+  .wheel{
+    width:58px;height:58px;background:#374151;border:7px solid #111827;
+    border-radius:50%;box-shadow:inset 0 0 0 9px #9ca3af
+  }
+  .controls{margin-top:52px;display:flex;flex-wrap:wrap;justify-content:center;gap:10px}
+  button{
+    border:none;border-radius:14px;padding:14px 18px;font-size:22px;font-weight:800;
+    cursor:pointer;background:white;color:var(--ink);
+    box-shadow:0 4px 12px rgba(31,41,55,.12);min-width:58px
+  }
+  .digitbtn{border:2px solid #dbeafe}
+  .back{background:#fff7ed}
+  .reset{background:#fee2e2;color:#991b1b}
+  .status{margin-top:18px;font-size:clamp(18px,2.5vw,25px);font-weight:700;min-height:32px}
+  .numberline{
+    display:inline-flex;gap:.25em;align-items:center;justify-content:center;
+    padding:8px 16px;border-radius:12px;background:white;
+    box-shadow:0 3px 10px rgba(31,41,55,.08)
+  }
+  .home{
+    display:inline-block;margin-top:20px;color:#374151;text-decoration:none;
+    font-size:16px;font-weight:700
+  }
+  @keyframes slideIn{from{transform:translateX(45px);opacity:0}to{transform:translateX(0);opacity:1}}
+  .pulse{animation:slideIn .22s ease}
+  @media (max-width:700px){
+    .windows{gap:10px}.car{padding:22px 12px 14px}.window{min-height:105px}
+    button{font-size:18px;padding:12px 14px;min-width:50px}
+  }
+</style>
+</head>
+<body>
+<div class="app">
+  <h1>Разряды числа</h1>
+  <div class="hint">Вводите цифры по одной — число заполняется справа налево.</div>
+
+  <div class="scene">
+    <div class="car">
+      <div class="roof"></div>
+      <div class="windows">
+        <div class="slot">
+          <div class="toplabel">с</div>
+          <div class="window"><div id="hundreds" class="digit empty">0</div></div>
+          <div class="bottomlabel">м</div>
+        </div>
+        <div class="slot">
+          <div class="toplabel">д</div>
+          <div class="window"><div id="tens" class="digit empty">0</div></div>
+          <div class="bottomlabel">дм</div>
+        </div>
+        <div class="slot">
+          <div class="toplabel">е</div>
+          <div class="window"><div id="ones" class="digit empty">0</div></div>
+          <div class="bottomlabel">см</div>
+        </div>
+      </div>
+      <div class="wheels"><div class="wheel"></div><div class="wheel"></div></div>
+    </div>
+  </div>
+
+  <div class="controls" aria-label="Клавиатура">
+    <button class="digitbtn" data-d="1">1</button>
+    <button class="digitbtn" data-d="2">2</button>
+    <button class="digitbtn" data-d="3">3</button>
+    <button class="digitbtn" data-d="4">4</button>
+    <button class="digitbtn" data-d="5">5</button>
+    <button class="digitbtn" data-d="6">6</button>
+    <button class="digitbtn" data-d="7">7</button>
+    <button class="digitbtn" data-d="8">8</button>
+    <button class="digitbtn" data-d="9">9</button>
+    <button class="digitbtn" data-d="0">0</button>
+    <button class="back" id="back">⌫</button>
+    <button class="reset" id="reset">Сброс</button>
+  </div>
+
+  <div class="status" id="status"><span class="numberline">Введите первую цифру</span></div>
+  <a class="home" href="../">← Математика</a>
+</div>
+
+<script>
+(function(){
+  let digits = [];
+  const h = document.getElementById('hundreds');
+  const t = document.getElementById('tens');
+  const o = document.getElementById('ones');
+  const status = document.getElementById('status');
+
+  function update(){
+    const vals = [
+      digits.length >= 3 ? digits[digits.length - 3] : null,
+      digits.length >= 2 ? digits[digits.length - 2] : null,
+      digits.length >= 1 ? digits[digits.length - 1] : null
+    ];
+    const els = [h,t,o];
+    els.forEach(function(el, i){
+      const v = vals[i];
+      el.textContent = v === null ? '0' : v;
+      el.classList.toggle('empty', v === null);
+      el.classList.remove('pulse');
+      void el.offsetWidth;
+      el.classList.add('pulse');
+    });
+    status.innerHTML = digits.length === 0
+      ? '<span class="numberline">Введите первую цифру</span>'
+      : '<span class="numberline">' + digits.join('') + '</span>';
+  }
+
+  function addDigit(d){
+    if(digits.length >= 3) return;
+    digits.push(String(d));
+    update();
+  }
+
+  document.querySelectorAll('.digitbtn').forEach(function(btn){
+    btn.addEventListener('click', function(){ addDigit(btn.getAttribute('data-d')); });
+  });
+  document.getElementById('back').addEventListener('click', function(){
+    if(digits.length > 0){ digits.pop(); update(); }
+  });
+  document.getElementById('reset').addEventListener('click', function(){ digits = []; update(); });
+  window.addEventListener('keydown', function(e){
+    if(/^[0-9]$/.test(e.key)) addDigit(e.key);
+    else if(e.key === 'Backspace' && digits.length > 0){ digits.pop(); update(); }
+    else if(e.key === 'Escape'){ digits = []; update(); }
+  });
+})();
+</script>
+</body>
+</html>
