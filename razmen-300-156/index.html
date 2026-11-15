@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Размен разрядов — 300 − 156</title>
+<style>
+:root{color-scheme:light}*{box-sizing:border-box}body{margin:0;background:#eff8fc;font-family:Arial,Helvetica,sans-serif;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;gap:18px;padding:12px}.panel{width:min(99vw,1680px);background:white;border:4px solid #00aeed}.panel svg{width:100%;height:auto;display:block;touch-action:manipulation}.pink{fill:#f7bfdc;stroke:#171717;stroke-width:5;stroke-linejoin:round}.blue{fill:#bceaff;stroke:#171717;stroke-width:3.7;stroke-linejoin:round}.dot{fill:#171717}.mark{fill:#00aeed;font-size:67px;font-weight:500}.number{fill:#161616;font-size:54px;font-weight:700;text-anchor:middle}.clickable{cursor:pointer}.clickable:focus{outline:none;filter:drop-shadow(0 0 5px #008fcb)}button{font:20px Arial,sans-serif;background:#fff;border:2px solid #74c8eb;border-radius:12px;color:#246783;padding:14px 26px;cursor:pointer}button:hover{background:#e6f7ff}@media(max-width:700px){button{font-size:17px;padding:11px 19px}}
+</style>
+</head>
+<body>
+<div class="panel"><svg id="board" viewBox="0 0 1600 465" role="img" aria-label="Интерактивная схема размена сотен и десятков при вычитании 300 минус 156"></svg></div>
+<button id="reset" type="button">Начать заново</button>
+<script>
+'use strict';
+const board=document.getElementById('board');let stage=0;
+const ns='http://www.w3.org/2000/svg';
+function elem(tag,attrs={},parent=board){let e=document.createElementNS(ns,tag);for(const[k,v] of Object.entries(attrs))e.setAttribute(k,v);parent.appendChild(e);return e}
+function triangle(x,y,w,h,kind,callback,caption){const e=elem('polygon',{points:`${x+w/2},${y} ${x+w},${y+h} ${x},${y+h}`,class:kind+(callback?' clickable':'')});if(callback){e.setAttribute('tabindex','0');e.setAttribute('role','button');e.setAttribute('aria-label',caption);e.addEventListener('click',callback);e.addEventListener('keydown',evt=>{if(evt.key==='Enter'||evt.key===' '){evt.preventDefault();callback()}})}return e}
+function dot(x,y,r=12){elem('circle',{cx:x,cy:y,r,class:'dot'})}
+function text(x,y,value,cls){let e=elem('text',{x,y,class:cls,'text-anchor':'middle'});e.textContent=value}
+function render(){board.replaceChildren();
+ triangle(60,206,128,126,'pink');triangle(216,206,128,126,'pink');
+ if(stage===0){triangle(372,206,128,126,'pink',()=>{stage=1;render()},'Разменять сотню на десять десятков')}
+ else{
+ const centers=[[479],[449,509],[419,479,539],[389,449,509,569]];
+ const ys=[144,202,260,318];
+ for(let r=0;r<4;r++)for(let i=0;i<centers[r].length;i++){
+   if(stage===2&&r===3&&i===3)continue;
+   const click=(stage===1&&r===3&&i===3)?()=>{stage=2;render()}:null;
+   triangle(centers[r][i]-24,ys[r],48,44,'blue',click,'Разменять правый нижний десяток на десять единиц');
+ }
+ if(stage===2){text(479,115,'9','number');text(699,115,'10','number');
+  const drows=[[699],[680,718],[661,699,737],[642,680,718,756]];
+  const dy=[190,234,278,322];drows.forEach((row,r)=>row.forEach(x=>dot(x,dy[r],11)));
+ }
+ }
+ text(837,298,'−','mark');
+ triangle(899,206,128,126,'pink');
+ [[1069,206],[1129,206],[1189,206],[1099,272],[1159,272]].forEach(([x,y])=>triangle(x,y,49,43,'blue'));
+ [[1320,225],[1357,225],[1394,225],[1320,281],[1357,281],[1394,281]].forEach(([x,y])=>dot(x,y,12));
+ text(1490,298,'=','mark');
+}
+document.getElementById('reset').addEventListener('click',()=>{stage=0;render()});render();
+</script>
+</body></html>
